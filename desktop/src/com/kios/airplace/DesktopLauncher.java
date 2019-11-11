@@ -6,8 +6,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 public class DesktopLauncher {
@@ -24,97 +22,78 @@ public class DesktopLauncher {
     private boolean[] clicked = {false, false, false};
 
     private DesktopLauncher() {
-        logFilesFolderButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        logFilesFolderButton.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    boolean checkFolderName = jFileChooser.getSelectedFile().getName().equals("logs");
-                    boolean checkRss = new File(jFileChooser.getSelectedFile() + "\\rss").exists();
-                    boolean checkMagnetic = new File(jFileChooser.getSelectedFile() + "\\magnetic").exists();
+            if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                boolean checkFolderName = jFileChooser.getSelectedFile().getName().equals("logs");
+                boolean checkRss = new File(jFileChooser.getSelectedFile() + "\\rss").exists();
+                boolean checkMagnetic = new File(jFileChooser.getSelectedFile() + "\\magnetic").exists();
 
-                    if (checkFolderName && checkRss && checkMagnetic) {
-                        buildButton.setEnabled(true);
-                        logsFilesFolderPath = String.valueOf(jFileChooser.getSelectedFile().getParent());
-                    }
+                if (checkFolderName && checkRss && checkMagnetic) {
+                    buildButton.setEnabled(true);
+                    logsFilesFolderPath = String.valueOf(jFileChooser.getSelectedFile().getParent());
                 }
             }
         });
-        buildButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new CreateRadioMaps(logsFilesFolderPath);
+        buildButton.addActionListener(e -> new CreateRadioMaps(logsFilesFolderPath));
+        radioMapsFolderButton.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                clicked[0] = true;
+
+                if (clicked[1] && clicked[2])
+                    runButton.setEnabled(true);
+
+                String radioMapsDirectory = jFileChooser.getSelectedFile().getAbsolutePath();
+
+                Globals.RSS_NAV_FILE_PATH = radioMapsDirectory + "\\rss\\rssRadioMap-mean.txt";
+                Globals.MAGNETIC_NAV_FILE_PATH = radioMapsDirectory + "\\magnetic\\magneticRadioMap-mean.txt";
             }
         });
-        radioMapsFolderButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        logFileButton.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            jFileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 
-                if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    clicked[0] = true;
+            if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                clicked[1] = true;
 
-                    if (clicked[1] && clicked[2])
-                        runButton.setEnabled(true);
+                if (clicked[0] && clicked[2])
+                    runButton.setEnabled(true);
 
-                    String radioMapsDirectory = jFileChooser.getSelectedFile().getAbsolutePath();
+                String logsFileDirectory = jFileChooser.getCurrentDirectory().getParent();
+                String logFilesDate = jFileChooser.getSelectedFile().getName().split("-")[1];
 
-                    Globals.RSS_NAV_FILE_PATH = radioMapsDirectory + "\\rss\\rssRadioMap-mean.txt";
-                    Globals.MAGNETIC_NAV_FILE_PATH = radioMapsDirectory + "\\magnetic\\magneticRadioMap-mean.txt";
-                }
+                Globals.RSS_LOG_FILE_PATH = logsFileDirectory + "\\rss\\rssFile-" + logFilesDate;
+                Globals.MAGNETIC_LOG_FILE_PATH = logsFileDirectory + "\\magnetic\\magneticFile-" + logFilesDate;
             }
         });
-        logFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                jFileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
+        outputDirectoryButton.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    clicked[1] = true;
+            if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                clicked[2] = true;
 
-                    if (clicked[0] && clicked[2])
-                        runButton.setEnabled(true);
+                if (clicked[0] && clicked[1])
+                    runButton.setEnabled(true);
 
-                    String logsFileDirectory = jFileChooser.getCurrentDirectory().getParent();
-                    String logFilesDate = jFileChooser.getSelectedFile().getName().split("-")[1];
-
-                    Globals.RSS_LOG_FILE_PATH = logsFileDirectory + "\\rss\\rssFile-" + logFilesDate;
-                    Globals.MAGNETIC_LOG_FILE_PATH = logsFileDirectory + "\\magnetic\\magneticFile-" + logFilesDate;
-                }
+                Globals.WRITER_PATH = jFileChooser.getSelectedFile().getAbsolutePath();
             }
         });
-        outputDirectoryButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser jFileChooser = new JFileChooser();
-                jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-                if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    clicked[2] = true;
-
-                    if (clicked[0] && clicked[1])
-                        runButton.setEnabled(true);
-
-                    Globals.WRITER_PATH = jFileChooser.getSelectedFile().getAbsolutePath();
-                }
-            }
-        });
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-                config.width = 1920;
-                config.height = 1080;
-                config.title = "AirPlace Simulator";
-                jFrame.dispose();
-                WiFiMagnetic wiFiMagnetic = new WiFiMagnetic();
-                new LwjglApplication(new AirPlace(wiFiMagnetic), config);
-            }
+        runButton.addActionListener(e -> {
+            LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+            config.width = 1920;
+            config.height = 1080;
+            config.forceExit = false;
+            config.title = "AirPlace Simulator";
+            jFrame.dispose();
+            WiFiMagnetic wiFiMagnetic = new WiFiMagnetic();
+            new LwjglApplication(new AirPlace(wiFiMagnetic), config);
         });
     }
 
