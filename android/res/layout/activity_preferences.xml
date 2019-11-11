@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".PreferencesActivity">
+
+    <TextView
+        android:id="@+id/tvPositioningAlgorithms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/positioning_algorithms"
+        android:textSize="30sp" />
+
+    <RadioGroup
+        android:id="@+id/rgPositioningAlgorithms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/rbKNN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/k_nearest_neighbor_knn" />
+
+        <RadioButton
+            android:id="@+id/rbWKNN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/weighted_k_nearest_neighbor_wknn" />
+
+        <RadioButton
+            android:id="@+id/rbMAP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/probabilistic_maximum_a_posteriori_map" />
+
+        <RadioButton
+            android:id="@+id/rbMMSE"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/probabilistic_minimum_mean_square_error_mmse" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/location"
+        android:textSize="30sp" />
+
+    <CheckBox
+        android:id="@+id/cbPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/points" />
+
+    <CheckBox
+        android:id="@+id/cbRss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rss_location" />
+
+    <CheckBox
+        android:id="@+id/cbMagnetic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/magnetic_location" />
+
+    <CheckBox
+        android:id="@+id/cbFused"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fused_location" />
+
+    <CheckBox
+        android:id="@+id/cbPF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/particle_filter_location" />
+
+    <TextView
+        android:id="@+id/tvTotalPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/total_points"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/bntOK"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="okButtonClicked"
+        android:text="@string/ok" />
+</LinearLayout>

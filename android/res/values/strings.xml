@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AirPlace</string>
+    <string name="about">About</string>
+    <string name="preferences">Preferences</string>
+    <string name="positioning_algorithms">Positioning Algorithms</string>
+    <string name="k_nearest_neighbor_knn">K Nearest Neighbor (KNN)</string>
+    <string name="weighted_k_nearest_neighbor_wknn">Weighted K Nearest Neighbor (WKNN)</string>
+    <string name="probabilistic_maximum_a_posteriori_map">Probabilistic Maximum A Posteriori (MAP)</string>
+    <string name="probabilistic_minimum_mean_square_error_mmse">Probabilistic Minimum Mean Square Error (MMSE)</string>
+    <string name="location">Location</string>
+    <string name="points">Points</string>
+    <string name="rss_location">Rss Location</string>
+    <string name="magnetic_location">Magnetic Location</string>
+    <string name="fused_location">Fused Location</string>
+    <string name="particle_filter_location">Particle Filter Location</string>
+    <string name="total_points">Total Points</string>
+    <string name="ok">OK</string>
+    <string name="start">Start</string>
+    <string name="orientation_status_samples">Orientation  [-] Status [-] Samples [-]</string>
+    <string name="enable_navigator">Enable Navigator</string>
+    <string name="disable_navigator">Disable Navigator</string>
+    <string name="show_logger">Show Logger</string>
+    <string name="hide_logger">Hide Logger</string>
+    <string name="stop">Stop</string>
+    <string name="particle_filter_settings">Particle Filter Settings</string>
+    <string name="number_of_particles">Number of particles:</string>
+    <string name="particles_to_show">Particles to show:</string>
+    <string name="step_length">Step length:</string>
+    <string name="initial_variance">Initial variance:</string>
+    <string name="system_noise">System noise</string>
+    <string name="measurement_noise">Measurement noise</string>
+    <string name="done">Done</string>
+    <string name="particles_number">500</string>
+    <string name="particles_number_to_show">250</string>
+    <string name="step_length_number">0.8</string>
+    <string name="initial_variance_number">5</string>
+    <string name="system_noise_array_00">5</string>
+    <string name="system_noise_array_01">10</string>
+    <string name="system_noise_array_10">10</string>
+    <string name="system_noise_array_11">5</string>
+    <string name="measurement_noise_array_00">10</string>
+    <string name="measurement_noise_array_01">5</string>
+    <string name="measurement_noise_array_10">5</string>
+    <string name="measurement_noise_array_11">10</string>
+    <string name="debug">Debug</string>
+
+</resources>
