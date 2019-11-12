@@ -14,16 +14,19 @@ public class DesktopLauncher {
     private JButton logFilesFolderButton;
     private JButton buildButton;
     private JButton radioMapsFolderButton;
-    private JButton logFileButton;
+    private JButton routeFileButton;
     private JButton outputDirectoryButton;
     private JButton runButton;
 
+    private String previousPath;
     private String logsFilesFolderPath;
     private boolean[] clicked = {false, false, false};
 
     private DesktopLauncher() {
         logFilesFolderButton.addActionListener(e -> {
-            JFileChooser jFileChooser = new JFileChooser();
+            JFileChooser jFileChooser = new JFileChooser(previousPath);
+
+            jFileChooser.setDialogTitle("LogFiles Folder");
             jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -32,30 +35,36 @@ public class DesktopLauncher {
                 boolean checkMagnetic = new File(jFileChooser.getSelectedFile() + "\\magnetic").exists();
 
                 if (checkFolderName && checkRss && checkMagnetic) {
-                    buildButton.setEnabled(true);
                     logsFilesFolderPath = String.valueOf(jFileChooser.getSelectedFile().getParent());
+                    previousPath = logsFilesFolderPath;
+                    buildButton.setEnabled(true);
                 }
             }
         });
         buildButton.addActionListener(e -> new CreateRadioMaps(logsFilesFolderPath));
+
         radioMapsFolderButton.addActionListener(e -> {
-            JFileChooser jFileChooser = new JFileChooser();
+            JFileChooser jFileChooser = new JFileChooser(previousPath);
+
+            jFileChooser.setDialogTitle("RadioMaps Folder");
             jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 clicked[0] = true;
-
-                if (clicked[1] && clicked[2])
-                    runButton.setEnabled(true);
+                routeFileButton.setEnabled(true);
+                outputDirectoryButton.setEnabled(true);
 
                 String radioMapsDirectory = jFileChooser.getSelectedFile().getAbsolutePath();
 
+                previousPath = jFileChooser.getSelectedFile().getParent();
                 Globals.RSS_NAV_FILE_PATH = radioMapsDirectory + "\\rss\\rssRadioMap-mean.txt";
                 Globals.MAGNETIC_NAV_FILE_PATH = radioMapsDirectory + "\\magnetic\\magneticRadioMap-mean.txt";
             }
         });
-        logFileButton.addActionListener(e -> {
-            JFileChooser jFileChooser = new JFileChooser();
+        routeFileButton.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser(previousPath);
+
+            jFileChooser.setDialogTitle("Route File");
             jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             jFileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 
@@ -65,15 +74,17 @@ public class DesktopLauncher {
                 if (clicked[0] && clicked[2])
                     runButton.setEnabled(true);
 
-                String logsFileDirectory = jFileChooser.getCurrentDirectory().getParent();
+                String logsFileDirectory = jFileChooser.getCurrentDirectory().getAbsolutePath();
                 String logFilesDate = jFileChooser.getSelectedFile().getName().split("-")[1];
 
-                Globals.RSS_LOG_FILE_PATH = logsFileDirectory + "\\rss\\rssFile-" + logFilesDate;
-                Globals.MAGNETIC_LOG_FILE_PATH = logsFileDirectory + "\\magnetic\\magneticFile-" + logFilesDate;
+                Globals.RSS_LOG_FILE_PATH = logsFileDirectory + "\\rssFile-" + logFilesDate;
+                Globals.MAGNETIC_LOG_FILE_PATH = logsFileDirectory + "\\magneticFile-" + logFilesDate;
             }
         });
         outputDirectoryButton.addActionListener(e -> {
-            JFileChooser jFileChooser = new JFileChooser();
+            JFileChooser jFileChooser = new JFileChooser(previousPath);
+
+            jFileChooser.setDialogTitle("Output Directory");
             jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             if (jFileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -91,6 +102,7 @@ public class DesktopLauncher {
             config.height = 1080;
             config.forceExit = false;
             config.title = "AirPlace Simulator";
+
             jFrame.dispose();
             WiFiMagnetic wiFiMagnetic = new WiFiMagnetic();
             new LwjglApplication(new AirPlace(wiFiMagnetic), config);
@@ -142,10 +154,12 @@ public class DesktopLauncher {
         radioMapsFolderButton = new JButton();
         radioMapsFolderButton.setText("RadioMaps Folder");
         jPanel.add(radioMapsFolderButton, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        logFileButton = new JButton();
-        logFileButton.setText("Log File");
-        jPanel.add(logFileButton, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        routeFileButton = new JButton();
+        routeFileButton.setEnabled(false);
+        routeFileButton.setText("Route File");
+        jPanel.add(routeFileButton, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         outputDirectoryButton = new JButton();
+        outputDirectoryButton.setEnabled(false);
         outputDirectoryButton.setText("Output Directory");
         jPanel.add(outputDirectoryButton, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         runButton = new JButton();

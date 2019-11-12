@@ -32,10 +32,10 @@ public class Globals {
 
 	//Paths
 	static String RSS_LOG_FILE_PATH = "AirPlace\\logs\\rss\\rssFile-";
-	public static String RSS_NAV_FILE_PATH = "\\AirPlace\\radioMaps\\rss\\rssRadioMap-mean.txt";
+	public static String RSS_NAV_FILE_PATH = "/AirPlace/radioMaps/rss/rssRadioMap-mean.txt";
 
 	static String MAGNETIC_LOG_FILE_PATH = "AirPlace\\logs\\magnetic\\magneticFile-";
-	public static String MAGNETIC_NAV_FILE_PATH = "\\AirPlace\\radioMaps\\magnetic\\magneticRadioMap-mean.txt";
+	public static String MAGNETIC_NAV_FILE_PATH = "/AirPlace/radioMaps/magnetic/magneticRadioMap-mean.txt";
 
 	//Headings
 	static String RSS_HEADING = "# Timestamp, X, Y, Orientation, MAC Address of AP, RSS\n";
