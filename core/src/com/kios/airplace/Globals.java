@@ -1,5 +1,6 @@
 package com.kios.airplace;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class Globals {
 	//Particle Filter
-	static int PARTICLES_NUMBER = 500;
+	public static int PARTICLES_NUMBER = 500;
 	static int PARTICLES_NUMBER_TO_SHOW = 250;
 
 	public static float STEP_LENGTH = 0.8f;
@@ -24,7 +25,7 @@ public class Globals {
 	public static RealMatrix SYSTEM_NOISE = MatrixUtils.createRealMatrix(new double[][] {{5, 10}, {10, 5}});
 	public static RealMatrix MEASUREMENTS_NOISE = MatrixUtils.createRealMatrix(new double[][] {{10, 5}, {5, 10}});
 
-	static ArrayList<Particle> PARTICLES = new ArrayList<>();
+	public static ArrayList<Particle> PARTICLES = new ArrayList<>();
 
 	//Room
 	public static String ROOM_NAME = "SFC-03";
@@ -97,8 +98,10 @@ public class Globals {
 	static Box2DDebugRenderer RENDERER;
 
 	//Desktop
+	static Game GAME;
 	static Stage UI_STAGE;
 	static String WRITER_PATH;
+	static boolean FE_MN = false;
 	static boolean SHOW_NEXT = false;
 	static double[][] REAL_LOCATION = new double[2][1];
 	static ArrayList<Vector2> rlPoints = new ArrayList<>();

@@ -13,6 +13,8 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
+import java.util.ArrayList;
+
 public class Particle extends Image {
 	public Body body;
 	public float radius;
@@ -22,6 +24,8 @@ public class Particle extends Image {
 	private Vector2 velocity;
 	private Vector2 v = new Vector2();
 	private NormalDistribution normalDistribution = new NormalDistribution();
+
+	public ArrayList<Vector2> points = new ArrayList<>();
 
 	public Particle(RealMatrix baseLocation, double initialWeight) {
 		radius = 0.05f;
@@ -51,6 +55,7 @@ public class Particle extends Image {
 		setPosition(body.getPosition().x, body.getPosition().y);
 
 		circleShape.dispose();
+		points.add(new Vector2(bodyDef.position));
 	}
 
 	public void eliminate() {
@@ -69,6 +74,7 @@ public class Particle extends Image {
 		try {
 			MultivariateNormalDistribution mvnPdf = new MultivariateNormalDistribution(fusedEngineLocationMatrix.getColumn(0), Globals.MEASUREMENTS_NOISE.getData());
 			weight = mvnPdf.density(prediction.getColumn(0));
+			points.add(new Vector2((float) prediction.getEntry(0, 0), (float) prediction.getEntry(1, 0)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

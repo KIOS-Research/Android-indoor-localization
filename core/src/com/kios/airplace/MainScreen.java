@@ -76,6 +76,12 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 	private Label lblMagneticError;
 	private Label lblFusedError;
 	private Label lblParticleFilterError;
+	private Label lblNumberOfSamples;
+
+	private TextField txtMeasurementsNoise00;
+	private TextField txtMeasurementsNoise01;
+	private TextField txtMeasurementsNoise10;
+	private TextField txtMeasurementsNoise11;
 
 	private BufferedWriter writer;
 	private PositioningAlgorithms positioningAlgorithms;
@@ -164,8 +170,9 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		CheckBox cbPoints = new CheckBox("Points", skin);
 		final CheckBox cbRss = new CheckBox("Rss Location", skin);
 		CheckBox cbMagnetic = new CheckBox("Magnetic Location", skin);
-		final CheckBox cbFused = new CheckBox("Fused Location", skin);
+		final CheckBox cbFused = new CheckBox("Fused Location ", skin);
 		final CheckBox cbPF = new CheckBox("Particle Filter Location", skin);
+		final CheckBox cbMN = new CheckBox("MN", skin);
 
 		cbRss.setChecked(true);
 		cbMagnetic.setChecked(true);
@@ -179,6 +186,7 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		Label lblInitialVariance = new Label("Initial Variance", skin);
 		Label lblSystemNoise = new Label("System Noise", skin);
 		Label lblMeasurementNoise = new Label("Measurement Noise", skin);
+		Label lblSamples = new Label("Samples", skin);
 
 		final TextField txtNumberOfParticles = new TextField("", skin);
 		txtNumberOfParticles.setAlignment(Align.right);
@@ -220,22 +228,22 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		txtSystemNoise11.setName("txtSystemNoise11");
 		txtSystemNoise11.setMessageText(String.valueOf(Globals.SYSTEM_NOISE.getEntry(1, 1)));
 
-		final TextField txtMeasurementsNoise00 = new TextField("", skin);
+		txtMeasurementsNoise00 = new TextField("", skin);
 		txtMeasurementsNoise00.setAlignment(Align.right);
 		txtMeasurementsNoise00.setName("txtMeasurementsNoise00");
 		txtMeasurementsNoise00.setMessageText(String.valueOf(Globals.MEASUREMENTS_NOISE.getEntry(0, 0)));
 
-		final TextField txtMeasurementsNoise01 = new TextField("", skin);
+		txtMeasurementsNoise01 = new TextField("", skin);
 		txtMeasurementsNoise01.setAlignment(Align.right);
 		txtMeasurementsNoise01.setName("txtMeasurementsNoise01");
 		txtMeasurementsNoise01.setMessageText(String.valueOf(Globals.MEASUREMENTS_NOISE.getEntry(0, 1)));
 
-		final TextField txtMeasurementsNoise10 = new TextField("", skin);
+		txtMeasurementsNoise10 = new TextField("", skin);
 		txtMeasurementsNoise10.setAlignment(Align.right);
 		txtMeasurementsNoise10.setName("txtMeasurementsNoise10");
 		txtMeasurementsNoise10.setMessageText(String.valueOf(Globals.MEASUREMENTS_NOISE.getEntry(1, 0)));
 
-		final TextField txtMeasurementsNoise11 = new TextField("", skin);
+		txtMeasurementsNoise11 = new TextField("", skin);
 		txtMeasurementsNoise11.setAlignment(Align.right);
 		txtMeasurementsNoise11.setName("txtMeasurementsNoise11");
 		txtMeasurementsNoise11.setMessageText(String.valueOf(Globals.MEASUREMENTS_NOISE.getEntry(1, 1)));
@@ -244,6 +252,7 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 
 		cbFused.setDisabled(true);
 		cbPF.setDisabled(true);
+		cbMN.setDisabled(true);
 		txtNumberOfParticles.setDisabled(true);
 		txtParticlesToShow.setDisabled(true);
 		txtStepLength.setDisabled(true);
@@ -263,6 +272,7 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		lblMagneticError = new Label("Magnetic: N/A", skin);
 		lblFusedError = new Label("Fused: NaN", skin);
 		lblParticleFilterError = new Label("Particle Filter: NaN", skin);
+		lblNumberOfSamples = new Label("0", skin);
 
 		//Listeners
 		final ChangeListener changeListener = new ChangeListener() {
@@ -274,6 +284,7 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 				if (!sbPositioningAlgorithms.getSelected().equals("KNN")) {
 					cbFused.setDisabled(false);
 					cbPF.setDisabled(false);
+					cbMN.setDisabled(false);
 					txtNumberOfParticles.setDisabled(false);
 					txtParticlesToShow.setDisabled(false);
 					txtStepLength.setDisabled(false);
@@ -357,6 +368,17 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 			}
 		});
 
+		cbMN.addListener(new ChangeListener() {
+			public void changed(ChangeEvent event, Actor actor) {
+				Globals.FE_MN = !Globals.FE_MN;
+				cbMN.setDisabled(true);
+				txtMeasurementsNoise00.setDisabled(true);
+				txtMeasurementsNoise01.setDisabled(true);
+				txtMeasurementsNoise10.setDisabled(true);
+				txtMeasurementsNoise11.setDisabled(true);
+			}
+		});
+
 		cbPF.addListener(new ChangeListener() {
 			public void changed(ChangeEvent event, Actor actor) {
 				Globals.SHOW_MARKER_LOCATION[3] = !Globals.SHOW_MARKER_LOCATION[3];
@@ -396,69 +418,66 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 			}
 		});
 
-		TextField.TextFieldListener textFieldListener = new TextField.TextFieldListener() {
-			@Override
-			public void keyTyped(TextField textField, char c) {
-				if (c == '\r') {
-					String string = textField.getText().trim();
+		TextField.TextFieldListener textFieldListener = (textField, c) -> {
+			if (c == '\r') {
+				String string = textField.getText().trim();
 
-					if (string.equals("")) {
-						string = textField.getMessageText();
-						textField.setText(string);
-					} else if (string.contains("..")) {
-						string = textField.getMessageText();
-						textField.setText(string);
-					}
-
-					switch (textField.getName()) {
-						case "txtNumberOfParticles":
-							Globals.PARTICLES_NUMBER = Integer.parseInt(string);
-							for (Particle p : Globals.PARTICLES) {
-								p.eliminate();
-							}
-							Globals.pfPoints.clear();
-							Globals.PARTICLES.clear();
-							positioningAlgorithms.is_pf_initialized = false;
-							positioningAlgorithms.logicalArray = new boolean[Globals.PARTICLES_NUMBER];
-							break;
-						case "txtParticlesToShow":
-							Globals.PARTICLES_NUMBER_TO_SHOW = Integer.parseInt(string);
-							break;
-						case "txtStepLength":
-							Globals.STEP_LENGTH = Float.parseFloat(string);
-							break;
-						case "txtInitialVariance":
-							Globals.INITIAL_VARIANCE = Float.parseFloat(string);
-							break;
-						case "txtSystemNoise00":
-							Globals.SYSTEM_NOISE.setEntry(0, 0, Float.parseFloat(string));
-							break;
-						case "txtSystemNoise01":
-							Globals.SYSTEM_NOISE.setEntry(0, 1, Float.parseFloat(string));
-							break;
-						case "txtSystemNoise10":
-							Globals.SYSTEM_NOISE.setEntry(1, 0, Float.parseFloat(string));
-							break;
-						case "txtSystemNoise11":
-							Globals.SYSTEM_NOISE.setEntry(1, 1, Float.parseFloat(string));
-							break;
-						case "txtMeasurementsNoise00":
-							Globals.MEASUREMENTS_NOISE.setEntry(0, 0, Float.parseFloat(string));
-							break;
-						case "txtMeasurementsNoise01":
-							Globals.MEASUREMENTS_NOISE.setEntry(0, 1, Float.parseFloat(string));
-							break;
-						case "txtMeasurementsNoise10":
-							Globals.MEASUREMENTS_NOISE.setEntry(1, 0, Float.parseFloat(string));
-							break;
-						case "txtMeasurementsNoise11":
-							Globals.MEASUREMENTS_NOISE.setEntry(1, 1, Float.parseFloat(string));
-							break;
-					}
-					textField.setColor(Color.WHITE);
-				} else {
-					textField.setColor(Color.RED);
+				if (string.equals("")) {
+					string = textField.getMessageText();
+					textField.setText(string);
+				} else if (string.contains("..")) {
+					string = textField.getMessageText();
+					textField.setText(string);
 				}
+
+				switch (textField.getName()) {
+					case "txtNumberOfParticles":
+						Globals.PARTICLES_NUMBER = Integer.parseInt(string);
+						for (Particle p : Globals.PARTICLES) {
+							p.eliminate();
+						}
+						Globals.pfPoints.clear();
+						Globals.PARTICLES.clear();
+						positioningAlgorithms.is_pf_initialized = false;
+						positioningAlgorithms.logicalArray = new boolean[Globals.PARTICLES_NUMBER];
+						break;
+					case "txtParticlesToShow":
+						Globals.PARTICLES_NUMBER_TO_SHOW = Integer.parseInt(string);
+						break;
+					case "txtStepLength":
+						Globals.STEP_LENGTH = Float.parseFloat(string);
+						break;
+					case "txtInitialVariance":
+						Globals.INITIAL_VARIANCE = Float.parseFloat(string);
+						break;
+					case "txtSystemNoise00":
+						Globals.SYSTEM_NOISE.setEntry(0, 0, Float.parseFloat(string));
+						break;
+					case "txtSystemNoise01":
+						Globals.SYSTEM_NOISE.setEntry(0, 1, Float.parseFloat(string));
+						break;
+					case "txtSystemNoise10":
+						Globals.SYSTEM_NOISE.setEntry(1, 0, Float.parseFloat(string));
+						break;
+					case "txtSystemNoise11":
+						Globals.SYSTEM_NOISE.setEntry(1, 1, Float.parseFloat(string));
+						break;
+					case "txtMeasurementsNoise00":
+						Globals.MEASUREMENTS_NOISE.setEntry(0, 0, Float.parseFloat(string));
+						break;
+					case "txtMeasurementsNoise01":
+						Globals.MEASUREMENTS_NOISE.setEntry(0, 1, Float.parseFloat(string));
+						break;
+					case "txtMeasurementsNoise10":
+						Globals.MEASUREMENTS_NOISE.setEntry(1, 0, Float.parseFloat(string));
+						break;
+					case "txtMeasurementsNoise11":
+						Globals.MEASUREMENTS_NOISE.setEntry(1, 1, Float.parseFloat(string));
+						break;
+				}
+				textField.setColor(Color.WHITE);
+			} else {
+				textField.setColor(Color.RED);
 			}
 		};
 
@@ -476,19 +495,8 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		txtMeasurementsNoise11.setTextFieldListener(textFieldListener);
 
 		//Filters
-		TextField.TextFieldFilter integer = new TextField.TextFieldFilter() {
-			@Override
-			public boolean acceptChar(TextField textField, char c) {
-				return Character.toString(c).matches("^[0-9]");
-			}
-		};
-
-		TextField.TextFieldFilter decimal = new TextField.TextFieldFilter() {
-			@Override
-			public boolean acceptChar(TextField textField, char c) {
-				return Character.toString(c).matches("^[0-9.]");
-			}
-		};
+		TextField.TextFieldFilter integer = (textField, c) -> Character.toString(c).matches("^[0-9]");
+		TextField.TextFieldFilter decimal = (textField, c) -> Character.toString(c).matches("^[0-9.]");
 
 		txtNumberOfParticles.setTextFieldFilter(integer);
 		txtParticlesToShow.setTextFieldFilter(integer);
@@ -534,7 +542,11 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		window.add(txtSystemNoise01).uniform();
 		window.row();
 
-		window.add(cbFused).align(Align.left).uniform();
+		Table tableF = new Table();
+		tableF.add(cbFused);
+		tableF.add(cbMN).align(Align.right);
+
+		window.add(tableF);
 		window.add(txtSystemNoise10).uniform();
 		window.add(txtSystemNoise11).uniform();
 		window.row();
@@ -548,11 +560,11 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		window.add(txtMeasurementsNoise01).uniform();
 		window.row();
 
-		Table table = new Table();
-		table.add(btnDebug).uniform();
-		table.add(btnStep).uniform();
+		Table tableB = new Table();
+		tableB.add(btnDebug).uniform();
+		tableB.add(btnStep).uniform();
 
-		window.add(table).uniform();
+		window.add(tableB).uniform();
 		window.add(txtMeasurementsNoise10).uniform();
 		window.add(txtMeasurementsNoise11).uniform();
 
@@ -562,9 +574,11 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		window.row();
 		window.add(lblRssError).uniform().align(Align.left);
 		window.add(lblMagneticError).uniform().align(Align.left);
+		window.add(lblSamples).expand().colspan(2);
 		window.row();
 		window.add(lblFusedError).uniform().align(Align.left);
 		window.add(lblParticleFilterError).uniform().align(Align.left);
+		window.add(lblNumberOfSamples).expand().colspan(2);
 
 		window.pack();
 		window.setPosition(0, Gdx.graphics.getHeight());
@@ -649,11 +663,12 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 				if (Gdx.app.getType() == Desktop) {
 					Globals.fePoints.add(new Vector2((float) fusionEngineLocation[0][0], (float) fusionEngineLocation[1][0]));
 					lblFusedError.setText("Fused: " + calculateError(fusionEngineLocation));
+					if (Globals.FE_MN) updateMeasurementNoise();
 				}
 			}
 		}
 
-		if (Globals.NAVIGATOR && Globals.SHOW_MARKER_LOCATION[3]) {
+		if (Globals.SHOW_MARKER_LOCATION[3]) {
 			if (Globals.SELECTED_ALGORITHM != 1 && rssLocation != null && magneticLocation != null && fusionEngineLocation != null) {
 				particleFilterLocation = positioningAlgorithms.getParticleFilterLocation();
 
@@ -671,10 +686,6 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 				}
 			}
 		}
-	}
-
-	private void rotateMarkers() {
-		//TODO Rotate markers
 	}
 
 	private void drawLines() {
@@ -947,6 +958,20 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 		generator.dispose();
 	}
 
+	private void updateMeasurementNoise() {
+		DecimalFormat decimalFormat = new DecimalFormat("#.####");
+		DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+
+		decimalFormatSymbols.setDecimalSeparator('.');
+		decimalFormat.setRoundingMode(RoundingMode.CEILING);
+		decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+
+		txtMeasurementsNoise00.setText(String.valueOf(decimalFormat.format(Globals.MEASUREMENTS_NOISE.getEntry(0, 0))));
+		txtMeasurementsNoise01.setText(String.valueOf(decimalFormat.format(Globals.MEASUREMENTS_NOISE.getEntry(0, 1))));
+		txtMeasurementsNoise10.setText(String.valueOf(decimalFormat.format(Globals.MEASUREMENTS_NOISE.getEntry(1, 0))));
+		txtMeasurementsNoise11.setText(String.valueOf(decimalFormat.format(Globals.MEASUREMENTS_NOISE.getEntry(1, 1))));
+	}
+
 	private void distributePointsInLine() {
 		if (shouldDistribute) {
 			float xVelocity, yVelocity;
@@ -1051,6 +1076,8 @@ class MainScreen implements Screen, GestureDetector.GestureListener, InputProces
 			Globals.ONE_TIME_SCAN = false;
 
 			Globals.ACCESS_POINTS = Globals.WIFI_LIST.size();
+			if (Gdx.app.getType() == Desktop)
+				lblNumberOfSamples.setText(++Globals.RECORDED_SAMPLES);
 
 			if (Globals.LOGGER) {
 				if (Globals.ENABLE_LOGGING && Globals.CAN_DISTRIBUTE) {

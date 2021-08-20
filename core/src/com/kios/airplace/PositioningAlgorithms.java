@@ -480,6 +480,9 @@ class PositioningAlgorithms {
 			RealMatrix sigma = MatrixUtils.inverse(rssInv.add(magInv));
 			RealMatrix fusedLocationMatrix = sigma.multiply(rssInv.multiply(rssLoc).add(magInv.multiply(magLoc)));
 
+			if (Globals.FE_MN)
+				Globals.MEASUREMENTS_NOISE = sigma;
+
 			fusionEngineCovarianceMatrix = sigma.getData();
 			fusionEngineLocation = fusedLocationMatrix.getData();
 		} catch (Exception e) {

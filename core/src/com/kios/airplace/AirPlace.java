@@ -19,6 +19,7 @@ public class AirPlace extends Game {
 				Globals.CURRENT_ZOOM = 0.025f;
 				break;
 			case Desktop:
+				Globals.GAME = this;
 				Globals.ZOOM_IN = 0.01f;
 				Globals.ZOOM_OUT = 0.06f;
 				Globals.CURRENT_ZOOM = 0.06f;
